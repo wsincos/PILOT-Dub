@@ -1,0 +1,50 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v14.2
+  - _self_
+
+use_codebook_routing: true
+use_per_codebook_real_time_routing: true
+
+# Keep the stable v14.2 training recipe for the first routing test.
+use_scheduled_sampling: true
+scheduled_sampling_start_rate: 0.05
+scheduled_sampling_max_rate: 0.2
+scheduled_sampling_warmup_steps: 1000
+
+routing_summary_dim: ${d_model}
+routing_gate_hidden_dim: 512
+routing_dropout: 0.1
+routing_codebook_scales: [0.05, 0.03, 0.02, 0.02]
+
+# First version should be as clean as possible: no extra routing regularizers,
+# no v14.3b utilization/ablation objectives.
+routing_order_loss_weight: 0.0
+routing_smoothness_loss_weight: 0.0
+routing_order_margin: 0.0
+
+use_plan_utilization_loss: false
+plan_utilization_loss_weight: 0.0
+plan_ablation_loss_weight: 0.0
+plan_utilization_margin: 0.0
+plan_ablation_margin: 0.0
+plan_counterfactual_shift: 0
+plan_counterfactual_random_sign: false
+
+model:
+  plan_router:
+    _target_: src.modeling.modules.plan_router.RealTimeAlignedAsymmetricCodebookPlanRouter
+    dim_model: ${d_model}
+    n_codebooks: ${n_codebooks}
+    summary_dim: ${routing_summary_dim}
+    gate_hidden_dim: ${routing_gate_hidden_dim}
+    window_left: ${cross_attention_window_left}
+    window_right: ${cross_attention_window_right}
+    dropout: ${routing_dropout}
+    route_scale_init_per_codebook: ${routing_codebook_scales}
+
+  use_codebook_routing: ${use_codebook_routing}
+  use_per_codebook_real_time_routing: ${use_per_codebook_real_time_routing}
+
+model_type: v14.4c-pilot-dub-rt-asymmetric-routing

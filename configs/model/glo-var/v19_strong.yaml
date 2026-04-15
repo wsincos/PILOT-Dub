@@ -1,0 +1,13 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v19
+  - _self_
+
+plan_encoder_num_layers: 4
+
+model:
+  decoder:
+    num_layers: 16
+
+model_type: v19-pilot-dub-strong-real-time-acoustic-interface

@@ -1,0 +1,29 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v14.5
+  - _self_
+
+plan_encoder_num_layers: 2
+plan_cursor_loss_weight: 0.1
+plan_monotonic_loss_weight: 0.05
+plan_remaining_loss_weight: 0.05
+plan_stop_loss_weight: 0.05
+use_plan_cursor_loss: true
+use_plan_remaining_loss: true
+use_plan_stop_loss: true
+cursor_window_radius: 4.0
+
+model:
+  plan_encoder:
+    _target_: src.modeling.modules.cursor_planner.ExplicitCursorStatePlanner
+    dim_model: ${d_model}
+    hidden_dim: ${plan_encoder_hidden_dim}
+    num_layers: ${plan_encoder_num_layers}
+    num_heads: ${plan_encoder_num_heads}
+    dropout: ${plan_dropout}
+    cursor_window_radius: ${cursor_window_radius}
+    use_global_text_summary: true
+    use_global_ref_summary: true
+
+model_type: v14.6b-pilot-dub-cursor-state-planner

@@ -1,0 +1,12 @@
+# @package __global__
+
+
+tokenizer:
+  text:
+    language: "en-us"
+    backend: "espeak"
+  
+  audio:
+    device: ${device}
+    signature: ${artifacts.tokenizer_path}
+    

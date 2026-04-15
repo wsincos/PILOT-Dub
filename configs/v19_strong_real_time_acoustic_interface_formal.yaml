@@ -1,0 +1,66 @@
+defaults:
+  - callbacks: default
+  - data: lrs3
+  - logger: wandb
+  - model: pilot-dub/strong
+  - optimizer: v19_strong_finetune_from_pilotdub_final
+  - scheduler: default
+  - tokenizer: default
+  - _self_
+
+model_type: v19-strong-real-time-acoustic-interface-formal-from-pilotdub-final
+
+ckpt_dir: null
+load_original_model_from: ${project_root}/artifacts/PILOT-Dub/generator_epoch00.ckpt
+
+project_root: ${hydra:runtime.cwd}
+exp_dir: ${hydra:runtime.output_dir}
+
+pretrained_models_dir: ${project_root}/artifacts/pretrained_models
+datasets_dir: ${project_root}/data/dataset/LRS3_Dataset/mp4/trainval_preprocess
+artifacts:
+  tokenizer_path: ${pretrained_models_dir}/tokenizers/encodec.th
+  avhubert_path: ${pretrained_models_dir}/large_lrs3_iter5.pt
+  model_dir: ${pretrained_models_dir}/voicecraft_dub
+  face_preprocess_dir: ${pretrained_models_dir}/landmarks
+
+encodec_audio_sr: 16000
+encodec_sr: 50
+n_codebooks: 4
+codebook_weights: [3.0, 1.0, 1.0, 1.0]
+ce_loss_weight: 1.0
+vq_loss_weight: 0.0
+ref_consistency_weight: 0.0
+
+device: cuda
+seed: 1
+beam_size: 50
+num_steps: 150000
+
+trainer:
+  _target_: lightning.pytorch.Trainer
+  default_root_dir: ${exp_dir}
+  use_distributed_sampler: false
+  accelerator: gpu
+  devices: 1
+  strategy: auto
+  precision: 16-mixed
+  max_epochs: 5
+  accumulate_grad_batches: 4
+  gradient_clip_val: 1.0
+  gradient_clip_algorithm: norm
+  val_check_interval: 1000
+  check_val_every_n_epoch: null
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+  deterministic: false
+  enable_progress_bar: true
+
+hydra:
+  output_subdir: .hydra
+  job_logging:
+    version: 1
+    handlers: {}
+    root:
+      handlers: []
+    disable_existing_loggers: false

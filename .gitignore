@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+outputs/
+wandb/
+logs/
+*.log
+*.tmp
+
+# Data
+/data/dataset
+
+# Runtime / review internals
+AUTO_REVIEW.md
+REVIEW_STATE.json
+
+# Large artifacts: keep only small public metadata
+/artifacts/pretrained_models/
+/artifacts/torch/
+/artifacts/PILOT-Dub/*.ckpt
+/artifacts/PILOT-Dub/*.pt
+/artifacts/PILOT-Dub/*wandb*.txt
+!/artifacts/PILOT-Dub/MANIFEST.md
+!/artifacts/vocab/
+!/artifacts/vocab/phn2num.txt
+
+# Caches
+core
+core.*
+
+.DS_Store

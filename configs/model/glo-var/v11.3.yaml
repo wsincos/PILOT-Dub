@@ -1,0 +1,257 @@
+# @package __global__
+
+defaults:
+  - _self_
+
+# Keep the successful main structure (v5/v6 heads, v7 text split, v8 in-decoder video fusion)
+# Remove auxiliary losses (CTC / sync / alignment) and focus on exposure-bias mitigation only.
+
+top_k: 0
+top_p: 0.8
+temperature: 1
+kvcache: 0
+stop_repetition: -1
+sample_batch_size: 3
+special_first: false
+
+n_special: 4
+max_n_spans: 3
+d_model: 2048
+text_phoneme_vocab_size: 101
+text_ref_start_token: ${text_phoneme_vocab_size}
+text_target_start_token: ${eval:"${text_phoneme_vocab_size} + 1"}
+text_pad_token: ${eval:"${text_phoneme_vocab_size} + 2"}
+audio_vocab_size: 2048
+audio_pad_token: 2050
+silence_tokens: [1388, 1898, 131]
+codebook_weights: [3.0, 1.0, 1.0, 1.0]
+video_token_k: 512
+video_len_buckets: 32
+video_len_bucket_size: 10
+enable_audio_mask: false
+use_target_end_token: true
+v4_position_max_len: 5000
+cross_attention_window_left: 4
+cross_attention_window_right: 2
+cross_attention_num_heads: 8
+use_in_decoder_cross_attention: true
+in_decoder_cross_attention_num_layers: 2
+in_decoder_cross_attention_gate_init: 0.05
+
+use_sync_loss: false
+codebook_mid_dim: 1024
+codebook_repr_dim: 512
+use_ctc_loss: false
+ctc_loss_weight: 0.0
+ctc_vocab_size: 101
+ctc_blank_id: 101
+ctc_head_hidden_dim: 512
+ctc_dropout: 0.0
+sync_codebook_weights: [0.5, 0.25, 0.15, 0.10]
+
+ce_loss_weight: 1.0
+vq_loss_weight: 0.0
+ref_consistency_weight: 0.0
+sync_loss_weight: 0.0
+use_alignment_loss: false
+align_loss_weight: 0.0
+late_nonblank_weight: 0.0
+
+ce_label_smoothing: 0.05
+use_history_corruption: false
+history_corruption_max_rate: 0.0
+history_corruption_warmup_steps: 0
+use_scheduled_sampling: true
+scheduled_sampling_start_rate: 0.05
+scheduled_sampling_max_rate: 0.2
+scheduled_sampling_warmup_steps: 1000
+
+model_type: v11.3-ls005-ss005to02-no-hc-no-aux
+
+dataset:
+  use_ctc_labels: true
+  use_split_text_segments: true
+  text_ref_start_token: ${text_ref_start_token}
+  text_target_start_token: ${text_target_start_token}
+
+model:
+  _target_: src.modeling.nets.voicecraft_dub.VoiceCraftDubModel
+
+  text_embedding:
+    _target_: src.modeling.modules.embeddings.TokenEmbedding
+    vocab_size: ${eval:"${text_pad_token} + 1"}
+    dim_model: ${d_model}
+    dropout: 0.1
+
+  text_positional_embedding:
+    _target_: src.modeling.modules.embeddings.SinePositionalEmbedding
+    dim_model: ${d_model}
+    dropout: 0.0
+    scale: false
+    alpha: true
+
+  audio_embedding:
+    _target_: src.modeling.modules.embeddings.AudioEmbedding
+    n_codebooks: ${n_codebooks}
+    vocab_size: ${eval:"${audio_vocab_size} + ${n_special}"}
+    dim_model: ${d_model}
+    dropout: 0.1
+
+  audio_positional_embedding:
+    _target_: src.modeling.modules.embeddings.RoPEPositionalEmbedding
+    dim_model: ${d_model}
+    base: 10000
+    dropout: 0.0
+
+  ref_audio_positional_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedPositionalEmbedding
+    dim_model: ${d_model}
+    max_len: ${v4_position_max_len}
+    dropout: 0.0
+
+  shared_audio_positional_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedPositionalEmbedding
+    dim_model: ${d_model}
+    max_len: ${v4_position_max_len}
+    dropout: 0.0
+
+  video_tokenizer:
+    _target_: src.modeling.modules.video_tokenizer.VideoTokenizerEMA
+    input_dim: 1024
+    embed_dim: ${d_model}
+    n_embed: ${video_token_k}
+    use_vq: true
+    beta: 0.25
+    decay: 0.99
+    eps: 1.0e-5
+    use_l2_norm: true
+    random_restart: true
+    restart_threshold: 1.0
+    restart_warmup_steps: 500
+    restart_interval: 100
+    temporal_layers: 0
+    temporal_kernel_size: 5
+    temporal_dilation: 1
+
+  audio_ref_token:
+    _target_: src.modeling.modules.embeddings.LearnedToken
+    dim_model: ${d_model}
+
+  video_len_token:
+    _target_: src.modeling.modules.embeddings.LengthBucketEmbedding
+    dim_model: ${d_model}
+    num_buckets: ${video_len_buckets}
+    bucket_size: ${video_len_bucket_size}
+
+  target_start_token:
+    _target_: src.modeling.modules.embeddings.LearnedToken
+    dim_model: ${d_model}
+
+  ref_audio_segment_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedTypeEmbedding
+    dim_model: ${d_model}
+
+  video_segment_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedTypeEmbedding
+    dim_model: ${d_model}
+
+  target_audio_segment_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedTypeEmbedding
+    dim_model: ${d_model}
+
+  target_end_segment_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedTypeEmbedding
+    dim_model: ${d_model}
+
+  text_ref_segment_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedTypeEmbedding
+    dim_model: ${d_model}
+
+  text_target_segment_embedding:
+    _target_: src.modeling.modules.embeddings.LearnedTypeEmbedding
+    dim_model: ${d_model}
+
+  cross_attention: null
+
+  in_decoder_cross_attention:
+    _target_: src.modeling.modules.fusion_layer.GatedLocalCrossAttentionFusion
+    dim_model: ${d_model}
+    num_heads: ${cross_attention_num_heads}
+    window_left: ${cross_attention_window_left}
+    window_right: ${cross_attention_window_right}
+    dropout: 0.1
+    use_layer_norm: true
+    gate_init: ${in_decoder_cross_attention_gate_init}
+
+  decoder:
+    _target_: src.modeling.modules.transformer.transformer.TransformerEncoder
+    encoder_layer:
+      _target_: src.modeling.modules.transformer.transformer.TransformerEncoderLayer
+      d_model: ${d_model}
+      nhead: 16
+      dim_feedforward: ${eval:"${d_model} * 4"}
+      dropout: 0.1
+      batch_first: true
+      norm_first: true
+      layer_norm_cls:
+        _target_: src.modeling.modules.transformer.transformer.LayerNorm
+        _partial_: true
+    num_layers: 8
+    norm:
+      _target_: src.modeling.modules.transformer.transformer.LayerNorm
+      normalized_shape: ${d_model}
+
+  predict_layer:
+    _target_: src.modeling.modules.predict_heads.TwoStepVoiceCraftHeads
+    n_codebooks: ${n_codebooks}
+    d_model: ${d_model}
+    audio_vocab_size: ${audio_vocab_size}
+    hidden_dim: ${codebook_mid_dim}
+    repr_dim: ${codebook_repr_dim}
+    n_special: ${n_special}
+
+  ctc_head:
+    _target_: src.modeling.modules.predict_heads.CTCHead
+    input_dim: ${codebook_repr_dim}
+    hidden_dim: ${ctc_head_hidden_dim}
+    vocab_size: ${eval:"${ctc_vocab_size} + 1"}
+    dropout: ${ctc_dropout}
+
+  processor:
+    _target_: src.modeling.modules.data_processors.VoiceCraftDataProcessor
+    pattern_provider:
+      _target_: src.modeling.modules.codebooks_patterns.DelayedPatternProvider
+      n_q: ${n_codebooks}
+    n_codebooks: ${n_codebooks}
+    audio_vocab_size: ${audio_vocab_size}
+    empty_id: ${audio_vocab_size}
+    eog_id: ${eval:"${audio_vocab_size} + 1"}
+    pad_id: ${eval:"${audio_vocab_size} + 2"}
+    eos_id: ${eval:"${audio_vocab_size} + 3"}
+    special_first: ${special_first}
+    n_special: ${n_special}
+    max_n_spans: ${max_n_spans}
+    encodec_sr: ${encodec_sr}
+
+  enable_audio_mask: ${enable_audio_mask}
+  use_sync_loss: ${use_sync_loss}
+  use_ctc_loss: ${use_ctc_loss}
+  use_alignment_loss: ${use_alignment_loss}
+  use_history_corruption: ${use_history_corruption}
+  history_corruption_max_rate: ${history_corruption_max_rate}
+  history_corruption_warmup_steps: ${history_corruption_warmup_steps}
+  use_scheduled_sampling: ${use_scheduled_sampling}
+  scheduled_sampling_start_rate: ${scheduled_sampling_start_rate}
+  scheduled_sampling_max_rate: ${scheduled_sampling_max_rate}
+  scheduled_sampling_warmup_steps: ${scheduled_sampling_warmup_steps}
+  sync_codebook_weights: ${sync_codebook_weights}
+  use_target_end_token: ${use_target_end_token}
+  use_in_decoder_cross_attention: ${use_in_decoder_cross_attention}
+  in_decoder_cross_attention_num_layers: ${in_decoder_cross_attention_num_layers}
+  text_ref_start_token_id: ${text_ref_start_token}
+  text_target_start_token_id: ${text_target_start_token}
+
+accuracy_metrics:
+  _target_: src.modeling.metrics.accuracy.CodebookTopKAccuracy
+  n_codebooks: ${n_codebooks}
+  top_k: 10

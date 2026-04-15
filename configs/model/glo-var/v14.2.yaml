@@ -1,0 +1,11 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v14.1
+  - _self_
+
+cross_attention_window_left: 1
+cross_attention_window_right: 4
+
+model_type: v14.2-pilot-dub-plan-lookahead
+

@@ -1,0 +1,62 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v12.1
+  - _self_
+
+cross_attention_window_left: 0
+cross_attention_window_right: 0
+
+use_planner: true
+use_plan_conditioning: true
+use_plan_progress_loss: true
+use_plan_boundary_loss: true
+
+progress_num_buckets: 8
+boundary_radius: 1
+
+plan_encoder_hidden_dim: ${eval:"${d_model} * 2"}
+plan_encoder_num_layers: 2
+plan_encoder_num_heads: 8
+plan_dropout: 0.1
+plan_head_hidden_dim: 512
+
+plan_progress_loss_weight: 0.1
+plan_boundary_loss_weight: 0.05
+
+dataset:
+  use_alignment_labels: true
+  alignment_label_dir: mfa_target_alignment
+
+model:
+  plan_encoder:
+    _target_: src.modeling.modules.plan_encoder.AudiovisualPlanEncoder
+    dim_model: ${d_model}
+    hidden_dim: ${plan_encoder_hidden_dim}
+    num_layers: ${plan_encoder_num_layers}
+    num_heads: ${plan_encoder_num_heads}
+    dropout: ${plan_dropout}
+    use_text_condition: true
+    use_ref_condition: true
+
+  plan_progress_head:
+    _target_: src.modeling.modules.predict_heads.CTCHead
+    input_dim: ${d_model}
+    hidden_dim: ${plan_head_hidden_dim}
+    vocab_size: ${progress_num_buckets}
+    dropout: 0.0
+
+  plan_boundary_head:
+    _target_: src.modeling.modules.predict_heads.CTCHead
+    input_dim: ${d_model}
+    hidden_dim: ${plan_head_hidden_dim}
+    vocab_size: 2
+    dropout: 0.0
+
+  use_planner: ${use_planner}
+  use_plan_conditioning: ${use_plan_conditioning}
+  use_plan_progress_loss: ${use_plan_progress_loss}
+  use_plan_boundary_loss: ${use_plan_boundary_loss}
+
+model_type: v14.1-pilot-dub-plan
+

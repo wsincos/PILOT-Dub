@@ -1,0 +1,24 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v14.4c
+  - _self_
+
+use_hierarchical_codebook_conditioning: true
+
+hierarchical_context_hidden_dim: 512
+hierarchical_context_dropout: 0.1
+hierarchical_context_scales: [0.0, 0.03, 0.03, 0.03]
+
+model:
+  hierarchical_codebook_conditioner:
+    _target_: src.modeling.modules.hierarchical_codebook.DelayedHierarchicalResidualConditioner
+    dim_model: ${d_model}
+    n_codebooks: ${n_codebooks}
+    hidden_dim: ${hierarchical_context_hidden_dim}
+    dropout: ${hierarchical_context_dropout}
+    context_scale_init_per_codebook: ${hierarchical_context_scales}
+
+  use_hierarchical_codebook_conditioning: ${use_hierarchical_codebook_conditioning}
+
+model_type: v14.5-pilot-dub-hierarchical-residual

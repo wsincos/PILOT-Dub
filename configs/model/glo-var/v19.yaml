@@ -1,0 +1,38 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v14.2
+  - _self_
+
+use_plan_acoustic_loss: true
+plan_acoustic_loss_weight: 0.10
+plan_acoustic_temperature: 0.07
+plan_acoustic_negative_delta: 1
+plan_acoustic_target_weights: [0.55, 0.20, 0.15, 0.10]
+plan_acoustic_detach_targets: true
+
+model:
+  plan_encoder:
+    _target_: src.modeling.modules.plan_encoder.LegacyAudiovisualPlanEncoder
+    dim_model: ${d_model}
+    hidden_dim: ${plan_encoder_hidden_dim}
+    num_layers: ${plan_encoder_num_layers}
+    num_heads: ${plan_encoder_num_heads}
+    dropout: ${plan_dropout}
+    use_text_condition: true
+    use_ref_condition: true
+
+  plan_acoustic_head:
+    _target_: src.modeling.modules.predict_heads.NormalizedMLPProjector
+    input_dim: ${d_model}
+    hidden_dim: 1024
+    output_dim: ${d_model}
+    dropout: 0.0
+
+  use_plan_acoustic_loss: ${use_plan_acoustic_loss}
+  plan_acoustic_temperature: ${plan_acoustic_temperature}
+  plan_acoustic_negative_delta: ${plan_acoustic_negative_delta}
+  plan_acoustic_target_weights: ${plan_acoustic_target_weights}
+  plan_acoustic_detach_targets: ${plan_acoustic_detach_targets}
+
+model_type: v19-pilot-dub-real-time-acoustic-interface

@@ -1,0 +1,11 @@
+wandb:
+  _target_: lightning.pytorch.loggers.wandb.WandbLogger
+  project: "PILOT-Dub"
+  name: "${model_type}-${now:%m-%d-%H:%M}"
+  save_dir: "${exp_dir}"
+  mode: "online" 
+  log_model: False # 设为 True 会把 checkpoint 上传到 wandb，设为 'all' 上传所有
+  tags: ["voicecraft", "dubbing"]
+  # 记录 ID (用于断点续训 resume)
+  # id: 6j1dd48i
+  # resume: "must" # 允许断点续训，需配合 id 使用

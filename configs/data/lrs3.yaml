@@ -1,0 +1,36 @@
+# @package __global__
+
+
+# dataset_dir: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/samples/trainval_preprocess
+
+# dataset_dir: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/dataset/LRS3_Dataset/mp4/trainval_preprocess
+dataset_dir: ${project_root}/data/dataset/LRS3_Dataset/mp4/trainval_preprocess
+
+dataset:
+  name: LRS3
+  manifest_name: manifest
+  drop_long: True
+  audio_min_length: 2.0
+  audio_max_length: 10.0 # 20
+  text_min_length: 10
+  text_max_length: 400
+  vocab_name: phn2num.txt # vocab.txt
+  lip_feature_dir: lip_feature
+  phn_folder_name: phonemes
+  encodec_folder_name: encodec_16khz_4codebooks
+  dynamic_batching: True
+  pad_x: False
+  sep_special_token: False
+  use_ctc_labels: False
+  ctc_phn_folder_name: phonemes_
+
+
+dataloader:
+  batch_size: 1
+  num_workers: 16
+  max_num_tokens: 3000 # 20000
+  val_max_num_tokens: 3000 # 6000
+  num_buckets: 6
+  audio_max_length: ${dataset.audio_max_length}
+  audio_min_length: ${dataset.audio_min_length}
+  encodec_sr: ${encodec_sr}

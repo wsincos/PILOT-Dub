@@ -1,0 +1,7 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v19_strong
+  - _self_
+
+model_type: pilot-dub-strong-real-time-acoustic-interface

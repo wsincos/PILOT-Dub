@@ -1,0 +1,41 @@
+# PILOT-Dub final reranking configuration.
+#
+# This YAML is intentionally lightweight and script-facing, not a Hydra training
+# entry. The generator remains a normal PILOT-Dub Hydra model config; the scorer is
+# an independent PyTorch checkpoint.
+
+version: archived
+method: wavlm_avsync_candidate_reranking
+
+generator:
+  final_model_cfg: pilot-dub/final
+  default_model_cfg: pilot-dub/final
+  final_ckpt_path: /data1/jinyu_wang/projects/PILOT-Dub/artifacts/PILOT-Dub/generator_epoch00.ckpt
+  default_ckpt_path: /data1/jinyu_wang/projects/PILOT-Dub/artifacts/PILOT-Dub/generator_epoch00.ckpt
+
+scorer:
+  type: wavlm_avsync_offset_scorer
+  default_ckpt_path: /data1/jinyu_wang/projects/PILOT-Dub/artifacts/PILOT-Dub/avsync_scorer_best.pt
+  wandb_id: edq0qy5e
+
+candidates:
+  - name: cand0_default
+    seed: 1
+    top_p: 0.8
+    temperature: 1.0
+    top_k: 0
+  - name: cand1_seed2
+    seed: 2
+    top_p: 0.8
+    temperature: 1.0
+    top_k: 0
+  - name: cand2_t09_p09
+    seed: 3
+    top_p: 0.9
+    temperature: 0.9
+    top_k: 0
+
+selection:
+  scorer_num_windows: 5
+  margin_threshold: 0.0
+  fallback_candidate_index: 0

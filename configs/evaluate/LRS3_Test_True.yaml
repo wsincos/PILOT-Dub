@@ -1,0 +1,58 @@
+# @package _global_
+
+defaults:
+  - /model: pilot-dub/final
+  - /tokenizer: default
+  - _self_
+
+project_root: ${hydra:runtime.cwd}
+pretrained_models_dir: ${project_root}/artifacts/pretrained_models
+
+artifacts:
+  tokenizer_path: ${pretrained_models_dir}/tokenizers/encodec.th
+  avhubert_path: ${pretrained_models_dir}/large_lrs3_iter5.pt
+  face_preprocess_dir: ${pretrained_models_dir}/landmarks
+
+device: 0
+seed: 1
+
+encodec_sr: 50
+n_codebooks: 4
+codec_audio_sr: 16000
+codec_sr: 50
+
+##########################################################################
+## Inference settings
+
+result_root: ${project_root}/outputs/examples/lrs3
+ckpt_path: ${project_root}/artifacts/PILOT-Dub/generator_epoch00.ckpt
+
+
+list_path: ${project_root}/data/dataset/LRS3_Test_True/LRS3_Test.txt
+test_dir: ${project_root}/data/dataset/LRS3_Test_True/test_wav_Official
+
+system_names: [system1, system2] # system1, system2, or both: [system1, system2]
+lip_suffix: "" # optional, e.g. "_lips"
+output_wav_only: true
+
+# AV-HuBERT feature npy settings
+npy_dir: ${project_root}/data/dataset/LRS3_Test_True/LRS3_test_25FPS_LIPROI_Feature
+npy_filename_template: "AVHubertEmbed-{speaker}-{target_id}.npy"
+use_target_avhubert_num: false
+require_lip_output: false
+
+vocab_path: ${project_root}/artifacts/vocab/phn2num.txt
+
+##########################################################################
+
+target_video_exts: []
+reference_audio_exts: [".wav", ".mp4"]
+
+skip_existing: true
+append_summary: false
+max_items: -1
+min_frame: -1
+mask_avhubert: false
+
+
+# python scripts/evaluate_npy.py --config-name evaluate/LRS3_Test_True

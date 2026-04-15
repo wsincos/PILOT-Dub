@@ -1,0 +1,82 @@
+# @package _global_
+
+# defaults:
+#   - _self_
+#   - /model: voicecraft_dub/fast
+
+defaults:
+  - /model: pilot-dub/final
+  - /tokenizer: default
+  - _self_
+
+device: cuda # need to change position after lightning upgrade
+
+encodec_sr: 50
+
+silence_tokens: [1388, 1898, 131]
+codec_audio_sr: 16000
+codec_sr: 50
+n_codebooks: 4
+top_k: 0
+top_p: 0.8
+temperature: 1
+kvcache: 0
+stop_repetition: -1
+sample_batch_size: 3
+seed: 1
+beam_size: 50
+
+# precision: float16
+data:
+  num_workers: 8
+
+# train:
+#   resume: false
+
+# project_root: ${hydra:runtime.cwd}
+project_root: /data1/jinyu_wang/projects/PILOT-Dub
+
+pretrained_models_dir: ${project_root}/artifacts/pretrained_models
+artifacts:
+  tokenizer_path: ${pretrained_models_dir}/tokenizers/encodec.th
+  avhubert_path: ${pretrained_models_dir}/large_lrs3_iter5.pt
+  face_preprocess_dir: ${pretrained_models_dir}/landmarks
+
+result_dir: ${project_root}/data/temp_results
+# src_text: ${project_root}/data/samples/test/eZj5n8ScTkI/00001.txt
+# src_audio: ${project_root}/data/samples/test/eZj5n8ScTkI/00001.wav
+# tar_text: ${project_root}/data/samples/test/eZj5n8ScTkI/00005.txt
+# tar_video: ${project_root}/data/samples/test/eZj5n8ScTkI/00005.mp4
+
+# src_text: ${project_root}/data/samples/trainval/HaHeAdJNa70/50001.txt
+# src_audio: ${project_root}/data/samples/trainval/HaHeAdJNa70/50001.wav
+# tar_text: ${project_root}/data/samples/trainval/HaHeAdJNa70/50002.txt
+# tar_video: ${project_root}/data/samples/trainval/HaHeAdJNa70/50002.mp4
+# tar_audio: ${project_root}/data/samples/trainval/HaHeAdJNa70/50002.wav
+
+
+src_text: ${project_root}/data/examples/ref.txt
+src_audio: ${project_root}/data/examples/ref.wav
+tar_text: ${project_root}/data/examples/target.txt
+tar_video: ${project_root}/data/examples/target.mp4
+
+
+# src_text: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/CelebVDubTest/test/-DqmTaUK-Ow/0_2.txt
+# src_audio: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/CelebVDubTest/test/-DqmTaUK-Ow/0_2.wav
+# tar_text: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/CelebVDubTest/test/-DqmTaUK-Ow/0_2.txt
+# tar_video: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/CelebVDubTest/test/-DqmTaUK-Ow/0_2.mp4
+
+
+
+# tokenizer:
+#   text:
+#     language: "en-us"
+#     backend: "espeak"
+#   audio:
+#     device: "cuda"
+#     signature: ${artifacts.tokenizer_path}
+
+
+
+ckpt_path: ${project_root}/artifacts/PILOT-Dub/generator_epoch00.ckpt
+vocab_path: ${project_root}/artifacts/vocab/phn2num.txt

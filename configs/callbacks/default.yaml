@@ -1,0 +1,39 @@
+model_checkpoint:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  dirpath: "${hydra:runtime.output_dir}/checkpoints"
+  filename: "voicecraft-{epoch:02d}-{val_loss:.4f}"
+  monitor: "val_loss"
+  mode: "min"
+  save_top_k: 2
+  save_last: true
+
+early_stopping:
+  _target_: lightning.pytorch.callbacks.EarlyStopping
+  monitor: "val_loss"
+  min_delta: -1
+  patience: 10000
+  verbose: true
+  mode: "min"
+
+checkpoint_every_n_steps:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  dirpath: "resume_steps/"
+  filename: "resume_{step}"
+  every_n_train_steps: 150
+  save_top_k: 1
+  save_last: false
+  monitor: null
+
+checkpoint_every_epoch:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  dirpath: "${hydra:runtime.output_dir}/epochend"
+  filename: "{epoch:02d}"
+  monitor: null
+  mode: "min"
+  every_n_epochs: 1
+  save_on_train_epoch_end: true
+  save_top_k: -1
+  save_last: false
+
+progress_bar:
+  _target_: src.lightning.progress.EpochTQDMProgressBar

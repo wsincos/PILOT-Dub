@@ -1,0 +1,12 @@
+# @package __global__
+
+defaults:
+  - /model/glo-var/v11.3
+  - _self_
+
+use_state_consistency_loss: true
+state_loss_weight: 0.1
+state_huber_component_weight: 1.0
+state_cos_component_weight: 1.0
+
+model_type: v12.1-certified-interface-state

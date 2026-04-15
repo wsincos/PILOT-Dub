@@ -1,0 +1,4 @@
+# @package __global__
+
+scheduler:
+  warmup_fraction: 0.1
