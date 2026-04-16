@@ -33,14 +33,13 @@ data:
 # train:
 #   resume: false
 
-# project_root: ${hydra:runtime.cwd}
-project_root: /data1/jinyu_wang/projects/PILOT-Dub
+project_root: ${hydra:runtime.cwd}
 
 pretrained_models_dir: ${project_root}/artifacts/pretrained_models
 artifacts:
   tokenizer_path: ${pretrained_models_dir}/tokenizers/encodec.th
   avhubert_path: ${pretrained_models_dir}/large_lrs3_iter5.pt
-  face_preprocess_dir: ${pretrained_models_dir}/landmarks
+  face_preprocess_dir: ${pretrained_models_dir}/face_preprocess/landmarks
 
 result_dir: ${project_root}/data/temp_results
 # src_text: ${project_root}/data/samples/test/eZj5n8ScTkI/00001.txt

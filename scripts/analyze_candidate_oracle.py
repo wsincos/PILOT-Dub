@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from statistics import mean
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_RESULTS_ROOT = PROJECT_ROOT.parent / "metrics" / "results" / "LRS3-mini20"
 
 def latest_run(result_root: Path) -> Path:
     runs = sorted([p for p in result_root.glob("*") if p.is_dir() and p.name != "syncnet_tmp"])
@@ -153,7 +155,7 @@ def print_summary(result: dict) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Analyze K-candidate oracle reranking from metrics outputs.")
-    parser.add_argument("--results-root", default="/data1/jinyu_wang/projects/metrics/results/LRS3-mini20")
+    parser.add_argument("--results-root", default=str(DEFAULT_RESULTS_ROOT))
     parser.add_argument("--dataset", default="LRS3-mini20")
     parser.add_argument("--candidates", required=True, help="Comma-separated candidate result names. First is baseline.")
     parser.add_argument("--systems", default="system1,system2")

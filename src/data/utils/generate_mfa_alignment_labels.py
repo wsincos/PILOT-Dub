@@ -12,6 +12,9 @@ from typing import Dict, Iterable, List, Optional, Sequence
 
 import numpy as np
 
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_RAW_ROOT = PROJECT_ROOT / "data" / "dataset" / "LRS3_Dataset" / "mp4"
+DEFAULT_PREPROCESS_DIR = DEFAULT_RAW_ROOT / "pretrain_trainval_preprocess"
 
 DEFAULT_SILENCE_LABELS = {"sil", "sp", "spn", "<eps>", "silence"}
 
@@ -41,13 +44,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--raw_root_dir",
         type=str,
-        default="/data1/jinyu_wang/datasets/LRS3_Dataset/mp4",
+        default=str(DEFAULT_RAW_ROOT),
         help="Root of the raw LRS3 dataset that still contains trainval/<speaker>/<utt>.mp4 and .txt.",
     )
     parser.add_argument(
         "--preprocess_dir",
         type=str,
-        default="/data1/jinyu_wang/datasets/LRS3_Dataset/mp4/trainval_preprocess",
+        default=str(DEFAULT_PREPROCESS_DIR),
         help="Existing preprocess directory containing manifest/ and encodec_16khz_4codebooks_.",
     )
     parser.add_argument(

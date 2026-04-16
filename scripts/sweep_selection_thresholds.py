@@ -5,6 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_RESULTS_ROOT = PROJECT_ROOT.parent / "metrics" / "results" / "LRS3"
 
 def latest_run(root: Path, name: str) -> Path:
     runs = sorted([p for p in (root / name).glob("*") if p.is_dir() and p.name != "syncnet_tmp"])
@@ -55,7 +57,7 @@ def select_for_threshold(selection: dict, candidate_metrics: list[dict[str, dict
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--selection-json", required=True)
-    parser.add_argument("--results-root", default="/data1/jinyu_wang/projects/metrics/results/LRS3")
+    parser.add_argument("--results-root", default=str(DEFAULT_RESULTS_ROOT))
     parser.add_argument("--thresholds", default="0,0.02,0.05,0.075,0.1,0.125,0.15,0.2,0.25,0.3,0.4,0.5")
     parser.add_argument("--systems", default="system1,system2")
     parser.add_argument("--output-json", required=True)

@@ -13,6 +13,7 @@ import torch
 import torch.nn.functional as F
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_MODEL_OUT_ROOT = PROJECT_ROOT.parent / "metrics" / "model_out"
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -113,7 +114,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Select generated candidates with an independent AV sync scorer.")
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--dataset", default="LRS3-mini50")
-    parser.add_argument("--model-out-root", default="/data1/jinyu_wang/projects/metrics/model_out")
+    parser.add_argument("--model-out-root", default=str(DEFAULT_MODEL_OUT_ROOT))
     parser.add_argument("--candidates", required=True, help="Comma-separated candidate model_out names.")
     parser.add_argument("--selected-model-name", required=True)
     parser.add_argument("--systems", default="system1,system2")

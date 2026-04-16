@@ -1,10 +1,10 @@
 # @package __global__
 
 
-# dataset_dir: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/samples/trainval_preprocess
+# dataset_dir: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/samples/pretrain_trainval_preprocess
 
-# dataset_dir: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/dataset/LRS3_Dataset/mp4/trainval_preprocess
-dataset_dir: ${project_root}/data/dataset/LRS3_Dataset/mp4/trainval_preprocess
+# dataset_dir: /data/jinyu_wang/projects/VoiceCraft-Dub-Lightning/data/dataset/LRS3_Dataset/mp4/pretrain_trainval_preprocess
+dataset_dir: ${project_root}/data/dataset/LRS3_Dataset/mp4/pretrain_trainval_preprocess
 
 dataset:
   name: LRS3

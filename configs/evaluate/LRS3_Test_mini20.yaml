@@ -4,6 +4,6 @@ defaults:
   - /evaluate/LRS3_Test_True
   - _self_
 
-result_root: /data1/jinyu_wang/projects/metrics/model_out/LRS3-mini20/example
+result_root: ${project_root}/../metrics/model_out/LRS3-mini20/example
 list_path: ${project_root}/data/dataset/LRS3_Test_True/LRS3_Test_mini20.txt
 max_items: -1

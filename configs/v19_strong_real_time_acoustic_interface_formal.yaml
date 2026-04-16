@@ -17,12 +17,12 @@ project_root: ${hydra:runtime.cwd}
 exp_dir: ${hydra:runtime.output_dir}
 
 pretrained_models_dir: ${project_root}/artifacts/pretrained_models
-datasets_dir: ${project_root}/data/dataset/LRS3_Dataset/mp4/trainval_preprocess
+datasets_dir: ${project_root}/data/dataset/LRS3_Dataset/mp4/pretrain_trainval_preprocess
 artifacts:
   tokenizer_path: ${pretrained_models_dir}/tokenizers/encodec.th
   avhubert_path: ${pretrained_models_dir}/large_lrs3_iter5.pt
   model_dir: ${pretrained_models_dir}/voicecraft_dub
-  face_preprocess_dir: ${pretrained_models_dir}/landmarks
+  face_preprocess_dir: ${pretrained_models_dir}/face_preprocess/landmarks
 
 encodec_audio_sr: 16000
 encodec_sr: 50

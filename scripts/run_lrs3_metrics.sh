@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="/data1/jinyu_wang/projects/PILOT-Dub"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+METRICS_DIR="${METRICS_DIR:-${ROOT_DIR}/../metrics}"
 cd "${ROOT_DIR}"
 
 DEFAULT_MODEL_NAME=""
@@ -69,8 +71,7 @@ if [[ -n "${SEED_VALUE}" ]]; then
   EVAL_ARGS+=(seed="${SEED_VALUE}")
   echo "Using seed=${SEED_VALUE}"
 fi
-RESULT_ROOT="/data1/jinyu_wang/projects/metrics/model_out/LRS3/${MODEL_NAME}"
-METRICS_DIR="/data1/jinyu_wang/projects/metrics"
+RESULT_ROOT="${METRICS_DIR}/model_out/LRS3/${MODEL_NAME}"
 
 if ! command -v conda >/dev/null 2>&1; then
   echo "conda not found in PATH. Please initialize conda before running." >&2

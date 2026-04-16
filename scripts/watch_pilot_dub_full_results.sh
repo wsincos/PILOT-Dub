@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="/data1/jinyu_wang/projects/PILOT-Dub"
-METRICS_ROOT="/data1/jinyu_wang/projects/metrics/results/LRS3"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+METRICS_ROOT="${METRICS_ROOT:-${ROOT_DIR}/../metrics/results/LRS3}"
 REPORT_PATH="${ROOT_DIR}/reports/153.pilot_dub_full_rerank_results_summary.md"
-LOG_PATH="/tmp/watch_pilot_dub_full_results.log"
+LOG_PATH="${LOG_PATH:-${ROOT_DIR}/logs/watch_pilot_dub_full_results.log}"
 
 STRONG_NAME="pilotdub-strong-rerank-full"
 CLEAN_NAME="pilotdub-base-rerank-full"
 
 cd "${ROOT_DIR}"
+mkdir -p "$(dirname "${LOG_PATH}")"
+export ROOT_DIR METRICS_ROOT REPORT_PATH LOG_PATH
 
 log() {
   echo "[$(date '+%F %T')] $*" | tee -a "${LOG_PATH}"
@@ -57,8 +60,9 @@ python - <<'PY'
 import json
 from pathlib import Path
 
-root = Path("/data1/jinyu_wang/projects/metrics/results/LRS3")
-report = Path("/data1/jinyu_wang/projects/PILOT-Dub/reports/153.pilot_dub_full_rerank_results_summary.md")
+import os
+root = Path(os.environ["METRICS_ROOT"])
+report = Path(os.environ["REPORT_PATH"])
 names = [
     ("PILOT-Dub strong", "pilotdub-strong-rerank-full"),
     ("PILOT-Dub base", "pilotdub-base-rerank-full"),

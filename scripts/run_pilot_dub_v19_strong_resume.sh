@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_ROOT="/data1/jinyu_wang/projects/PILOT-Dub"
-CONDA_SH="/data1/jinyu_wang/miniconda3/etc/profile.d/conda.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 CONFIG_NAME="${CONFIG_NAME:-v19_strong_real_time_acoustic_interface_formal}"
 
 RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/outputs/formal/pilot_dub_v19_strong_run6}"
@@ -45,7 +45,9 @@ fi
 WANDB_ID="$(<"${WANDB_ID_FILE}")"
 
 cd "${PROJECT_ROOT}"
-source "${CONDA_SH}"
+CONDA_BASE="$(conda info --base)"
+# shellcheck source=/dev/null
+source "${CONDA_BASE}/etc/profile.d/conda.sh"
 conda activate vcdub
 export PYTHONPATH="${PROJECT_ROOT}"
 export CUDA_VISIBLE_DEVICES="${VISIBLE_GPUS}"

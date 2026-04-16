@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="/data1/jinyu_wang/projects/PILOT-Dub"
-RESULTS_ROOT="/data1/jinyu_wang/projects/metrics/results/LRS3"
-LOG_PATH="/tmp/watch_pilot_dub_threshold_sweep.log"
-SELECTION_JSON="/data1/jinyu_wang/projects/Glo-Var/reportsv3/glovarv16-strong-rerank2-full_LRS3_selection.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+RESULTS_ROOT="${RESULTS_ROOT:-${ROOT_DIR}/../metrics/results/LRS3}"
+LOG_PATH="${LOG_PATH:-${ROOT_DIR}/logs/watch_pilot_dub_threshold_sweep.log}"
+SELECTION_JSON="${SELECTION_JSON:-${ROOT_DIR}/reports/glovarv16-strong-rerank2-full_LRS3_selection.json}"
 
 declare -a NAMES=(
   "glovarv16-strong-rerank2-full-cand0-default"
@@ -16,6 +17,9 @@ M02_NAME="pilotdub-strong-rerank-full-m02"
 log() {
   echo "[$(date '+%F %T')] $*" | tee -a "${LOG_PATH}"
 }
+
+mkdir -p "$(dirname "${LOG_PATH}")"
+export ROOT_DIR RESULTS_ROOT SELECTION_JSON LOG_PATH
 
 latest_run() {
   local name="$1"
@@ -54,8 +58,9 @@ python scripts/sweep_selection_thresholds.py \
 
 python - <<'PY'
 import json
+import os
 from pathlib import Path
-root = Path("/data1/jinyu_wang/projects/metrics/results/LRS3")
+root = Path(os.environ["RESULTS_ROOT"])
 names = ["glovarv14.6b-epoch0", "glovarv16-strong-rerank2-full", "pilotdub-strong-rerank-full-m02"]
 
 def latest(name):
@@ -97,7 +102,7 @@ for name in names:
         f"{macro['utmos']:.4f} | {macro['spk']:.4f} | {macro['gt25']:.4f} | {macro['gt50']:.4f} |"
     )
 lines += ["", "See `154.strong_threshold_sweep.md` for the offline threshold sweep over exact candidate metrics."]
-Path("/data1/jinyu_wang/projects/PILOT-Dub/reports/155.strong_threshold_followup_summary.md").write_text("\n".join(lines), encoding="utf-8")
+Path(os.environ["ROOT_DIR"]).joinpath("reports/155.strong_threshold_followup_summary.md").write_text("\n".join(lines), encoding="utf-8")
 PY
 
 log "threshold sweep completed"

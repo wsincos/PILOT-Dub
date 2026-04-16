@@ -6,16 +6,17 @@
 
 version: archived
 method: wavlm_avsync_candidate_reranking
+project_root: ${hydra:runtime.cwd}
 
 generator:
   final_model_cfg: pilot-dub/final
   default_model_cfg: pilot-dub/final
-  final_ckpt_path: /data1/jinyu_wang/projects/PILOT-Dub/artifacts/PILOT-Dub/generator_epoch00.ckpt
-  default_ckpt_path: /data1/jinyu_wang/projects/PILOT-Dub/artifacts/PILOT-Dub/generator_epoch00.ckpt
+  final_ckpt_path: ${project_root}/artifacts/PILOT-Dub/generator_epoch00.ckpt
+  default_ckpt_path: ${project_root}/artifacts/PILOT-Dub/generator_epoch00.ckpt
 
 scorer:
   type: wavlm_avsync_offset_scorer
-  default_ckpt_path: /data1/jinyu_wang/projects/PILOT-Dub/artifacts/PILOT-Dub/avsync_scorer_best.pt
+  default_ckpt_path: ${project_root}/artifacts/PILOT-Dub/avsync_scorer_best.pt
   wandb_id: edq0qy5e
 
 candidates:

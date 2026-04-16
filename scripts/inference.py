@@ -116,7 +116,7 @@ def load_tokenizers(cfg, device):
 def load_phn2num(cfg):
     vocab_path = cfg.get("vocab_path", None)
     if vocab_path is None:
-        vocab_path = os.path.join(cfg.pretrained_models_dir, "voicecraft_dub", "vocab.txt")
+        vocab_path = os.path.join(cfg.pretrained_models_dir, "tokenizers", "phn2num.txt")
     phn2num = {}
     with open(vocab_path, "r") as f:
         for line in f:

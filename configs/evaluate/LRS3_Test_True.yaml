@@ -11,7 +11,7 @@ pretrained_models_dir: ${project_root}/artifacts/pretrained_models
 artifacts:
   tokenizer_path: ${pretrained_models_dir}/tokenizers/encodec.th
   avhubert_path: ${pretrained_models_dir}/large_lrs3_iter5.pt
-  face_preprocess_dir: ${pretrained_models_dir}/landmarks
+  face_preprocess_dir: ${pretrained_models_dir}/face_preprocess/landmarks
 
 device: 0
 seed: 1

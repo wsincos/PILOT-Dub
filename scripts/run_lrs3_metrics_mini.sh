@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="/data1/jinyu_wang/projects/PILOT-Dub"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+METRICS_DIR="${METRICS_DIR:-${ROOT_DIR}/../metrics}"
 cd "${ROOT_DIR}"
 
 DEFAULT_SUBSET="mini50"
@@ -68,8 +70,7 @@ fi
 DATASET_TAG="LRS3-${SUBSET}"
 EVAL_CONFIG="evaluate/LRS3_Test_${SUBSET}"
 METRICS_CONFIG="evaluate-LRS3-${SUBSET}"
-RESULT_ROOT="/data1/jinyu_wang/projects/metrics/model_out/${DATASET_TAG}/${MODEL_NAME}"
-METRICS_DIR="/data1/jinyu_wang/projects/metrics"
+RESULT_ROOT="${METRICS_DIR}/model_out/${DATASET_TAG}/${MODEL_NAME}"
 
 if ! command -v conda >/dev/null 2>&1; then
   echo "conda not found in PATH. Please initialize conda before running." >&2

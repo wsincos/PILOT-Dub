@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="/data1/jinyu_wang/projects/PILOT-Dub"
-METRICS_DIR="/data1/jinyu_wang/projects/metrics"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+METRICS_DIR="${METRICS_DIR:-${ROOT_DIR}/../metrics}"
 cd "${ROOT_DIR}"
 
 if [[ $# -lt 8 ]]; then

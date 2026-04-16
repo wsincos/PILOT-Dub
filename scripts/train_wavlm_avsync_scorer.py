@@ -18,6 +18,8 @@ import torchaudio
 from torch.utils.data import DataLoader, Dataset
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_DATASET_DIR = PROJECT_ROOT / "data" / "dataset" / "LRS3_Dataset" / "mp4" / "pretrain_trainval_preprocess"
+DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "artifacts" / "PILOT-Dub" / "avsync_scorer_training"
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -256,8 +258,8 @@ def init_wandb(args: argparse.Namespace, resume_wandb_id: Optional[str]):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset-dir", default="/data1/jinyu_wang/projects/PILOT-Dub/data/dataset/LRS3_Dataset/mp4/trainval_preprocess")
-    parser.add_argument("--output-dir", default="/data1/jinyu_wang/projects/PILOT-Dub/artifacts/PILOT-Dub/avsync_scorer_training")
+    parser.add_argument("--dataset-dir", default=str(DEFAULT_DATASET_DIR))
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     parser.add_argument("--resume", default="")
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--audio-ssl", default="WAVLM_BASE_PLUS")
