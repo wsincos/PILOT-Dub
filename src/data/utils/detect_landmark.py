@@ -19,7 +19,7 @@ def load_video(path):
     return frames
 
 
-def detect_face_landmarks(face_predictor_path, cnn_detector_path, root_dir, landmark_dir, flist_fn):
+def detect_face_landmarks(face_predictor_path, cnn_detector_path, root_dir, landmark_dir, flist_fn, skip_existing=False):
     def detect_landmark(image, detector, cnn_detector, predictor):
         gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         rects = detector(gray, 1)
@@ -45,6 +45,8 @@ def detect_face_landmarks(face_predictor_path, cnn_detector_path, root_dir, land
     print(f"{len(fids)} files")
     for fid in tqdm(fids):
         output_fn = os.path.join(output_dir, fid+'.pkl')
+        if skip_existing and os.path.isfile(output_fn):
+            continue
         video_path = os.path.join(input_dir, fid+'.mp4')
         frames = load_video(video_path)
         landmarks = []
@@ -67,10 +69,22 @@ if __name__ == '__main__':
     parser.add_argument('--manifest', type=str, help='a list of filenames')
     parser.add_argument('--ffmpeg', type=str, help='ffmpeg path')
     parser.add_argument('--face_preprocess_dir', type=str, help='ffmpeg path')
+    parser.add_argument(
+        '--skip_existing',
+        action='store_true',
+        help='Skip videos whose landmark pickle already exists.',
+    )
     args = parser.parse_args()
     model_path=args.face_preprocess_dir
     face_predictor_path = os.path.join(model_path, "shape_predictor_68_face_landmarks.dat")
     cnn_detector_path = os.path.join(model_path, "mmod_human_face_detector.dat")
 
     vid_dir = os.path.join(args.root)
-    detect_face_landmarks(face_predictor_path, cnn_detector_path, vid_dir, args.landmark, args.manifest)
+    detect_face_landmarks(
+        face_predictor_path,
+        cnn_detector_path,
+        vid_dir,
+        args.landmark,
+        args.manifest,
+        skip_existing=args.skip_existing,
+    )

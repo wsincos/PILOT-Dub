@@ -86,10 +86,6 @@ def run_command(cmd: list[str], env: dict[str, str], desc: str):
     subprocess.run(cmd, check=True, env=env)
 
 
-def directory_has_files(path: Path) -> bool:
-    return path.exists() and any(path.iterdir())
-
-
 def load_split_len_keys(split_len_path: Path):
     keys = []
     with open(split_len_path, "r", encoding="utf-8") as f:
@@ -322,95 +318,84 @@ def main():
             desc=f"Phonemize transcripts and extract EnCodec tokens for raw split {split_name}",
         )
 
-    if not (args.skip_existing and directory_has_files(landmark_dir)):
-        run_command(
-            [
-                sys.executable,
-                str(PROJECT_ROOT / "src" / "data" / "utils" / "detect_landmark.py"),
-                "--root",
-                str(raw_root_dir),
-                "--landmark",
-                str(landmark_dir),
-                "--manifest",
-                str(file_list_path),
-                "--ffmpeg",
-                args.ffmpeg,
-                "--face_preprocess_dir",
-                args.face_preprocess_dir,
-            ],
-            env=env,
-            desc=f"Detect facial landmarks for raw splits: {', '.join(raw_splits)}",
-        )
-    else:
-        print("[SKIP] landmark directory already populated")
+    run_command(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "src" / "data" / "utils" / "detect_landmark.py"),
+            "--root",
+            str(raw_root_dir),
+            "--landmark",
+            str(landmark_dir),
+            "--manifest",
+            str(file_list_path),
+            "--ffmpeg",
+            args.ffmpeg,
+            "--face_preprocess_dir",
+            args.face_preprocess_dir,
+        ]
+        + (["--skip_existing"] if args.skip_existing else []),
+        env=env,
+        desc=f"Detect facial landmarks for raw splits: {', '.join(raw_splits)}",
+    )
 
-    if not (args.skip_existing and directory_has_files(video_dir)):
-        run_command(
-            [
-                sys.executable,
-                str(PROJECT_ROOT / "src" / "data" / "utils" / "align_mouth.py"),
-                "--video-direc",
-                str(raw_root_dir),
-                "--landmark",
-                str(landmark_dir),
-                "--filename-path",
-                str(file_list_path),
-                "--save-direc",
-                str(video_dir),
-                "--ffmpeg",
-                args.ffmpeg,
-                "--face_preprocess_dir",
-                args.face_preprocess_dir,
-            ],
-            env=env,
-            desc=f"Align mouth crops for raw splits: {', '.join(raw_splits)}",
-        )
-    else:
-        print("[SKIP] aligned lip video directory already populated")
+    run_command(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "src" / "data" / "utils" / "align_mouth.py"),
+            "--video-direc",
+            str(raw_root_dir),
+            "--landmark",
+            str(landmark_dir),
+            "--filename-path",
+            str(file_list_path),
+            "--save-direc",
+            str(video_dir),
+            "--ffmpeg",
+            args.ffmpeg,
+            "--face_preprocess_dir",
+            args.face_preprocess_dir,
+        ],
+        env=env,
+        desc=f"Align mouth crops for raw splits: {', '.join(raw_splits)}",
+    )
 
     if not args.skip_video_origin:
-        if not (args.skip_existing and directory_has_files(video_origin_dir)):
-            run_command(
-                [
-                    sys.executable,
-                    str(PROJECT_ROOT / "src" / "data" / "utils" / "restore_original_videos.py"),
-                    "--source_root_dir",
-                    str(raw_root_dir),
-                    "--file_list",
-                    str(file_list_path),
-                    "--lip_video_dir",
-                    str(video_dir),
-                    "--output_dir",
-                    str(video_origin_dir),
-                ],
-                env=env,
-                desc=f"Restore full original target videos for raw splits: {', '.join(raw_splits)}",
-            )
-        else:
-            print("[SKIP] video_origin directory already populated")
-
-    if not (args.skip_existing and directory_has_files(lip_feature_dir)):
         run_command(
             [
                 sys.executable,
-                str(PROJECT_ROOT / "src" / "data" / "utils" / "extract_avhubert_features.py"),
-                "--ckpt_path",
-                args.avhubert_ckpt_path,
-                "--input",
+                str(PROJECT_ROOT / "src" / "data" / "utils" / "restore_original_videos.py"),
+                "--source_root_dir",
+                str(raw_root_dir),
+                "--file_list",
+                str(file_list_path),
+                "--lip_video_dir",
                 str(video_dir),
                 "--output_dir",
-                str(lip_feature_dir),
-                "--ext",
-                ".mp4",
-                "--device",
-                args.device,
-            ]
-            + (["--skip_existing"] if args.skip_existing else []),
+                str(video_origin_dir),
+            ],
             env=env,
-            desc=f"Extract AV-HuBERT lip features for raw splits: {', '.join(raw_splits)}",
+            desc=f"Restore full original target videos for raw splits: {', '.join(raw_splits)}",
         )
-    else:
-        print("[SKIP] lip_feature directory already populated")
+
+    run_command(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "src" / "data" / "utils" / "extract_avhubert_features.py"),
+            "--ckpt_path",
+            args.avhubert_ckpt_path,
+            "--input",
+            str(video_dir),
+            "--output_dir",
+            str(lip_feature_dir),
+            "--ext",
+            ".mp4",
+            "--device",
+            args.device,
+        ]
+        + (["--skip_existing"] if args.skip_existing else []),
+        env=env,
+        desc=f"Extract AV-HuBERT lip features for raw splits: {', '.join(raw_splits)}",
+    )
 
     required_target_dirs = ["lip_feature"]
     if not args.skip_video_origin:
